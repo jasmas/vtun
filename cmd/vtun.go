@@ -7,8 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"vtun/util"
 
+	"github.com/net-byte/vtun/util"
 	"github.com/songgao/water"
 )
 

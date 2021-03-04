@@ -3,7 +3,8 @@ package main
 import (
 	"flag"
 	"log"
-	vtun "vtun/cmd"
+
+	vtun "github.com/net-byte/vtun/cmd"
 )
 
 var (
