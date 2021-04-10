@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/net-byte/vtun/util"
+	"github.com/net-byte/vtun/common/cipher"
 	"github.com/songgao/water"
 )
 
@@ -24,7 +24,7 @@ func New(local *string, remote *string, port *int, key *string) {
 		log.Fatal("Only support linux!")
 		return
 	}
-	hashKey := util.CreateHash(*key)
+	hashKey := cipher.CreateHash(*key)
 	// create tun
 	config := water.Config{
 		DeviceType: water.TAP,
@@ -64,7 +64,7 @@ func New(local *string, remote *string, port *int, key *string) {
 			}
 			b := buf[:n]
 			// decrypt data
-			util.Decrypt(&b, hashKey)
+			cipher.Decrypt(&b, hashKey)
 			iface.Write(b)
 		}
 	}()
@@ -77,7 +77,7 @@ func New(local *string, remote *string, port *int, key *string) {
 		}
 		b := packet[:n]
 		// encrypt data
-		util.Encrypt(&b, hashKey)
+		cipher.Encrypt(&b, hashKey)
 		conn.WriteToUDP(b, remoteAddr)
 	}
 }
@@ -95,6 +95,6 @@ func execCmd(c string, args ...string) {
 	cmd.Stdin = os.Stdin
 	err := cmd.Run()
 	if nil != err {
-		log.Fatalln("Error running /sbin/ip:", err)
+		log.Fatalln("Exec /sbin/ip error:", err)
 	}
 }
