@@ -26,7 +26,7 @@ func ConfigTun(cidr string, iface *water.Interface) {
 		execCmd("ifconfig", iface.Name(), ip.String(), minIp.String(), "up")
 	} else if os == "windows" {
 		log.Printf("please install openvpn client,see this link:%v", "https://github.com/OpenVPN/openvpn")
-		log.Printf("open new cmd and enter:netsh interface ip set address name=\"%v\" source=static addr=%v mask=%v gateway=none", iface.Name(), ipNet.IP.String(), ipNet.Mask.String())
+		log.Printf("open new cmd and enter:netsh interface ip set address name=\"%v\" source=static addr=%v mask=%v gateway=none", iface.Name(), ip.String(), ipNet.Mask.String())
 	} else {
 		log.Printf("not support os:%v", os)
 	}
