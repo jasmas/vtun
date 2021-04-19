@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	os := runtime.GOOS
-	if "linux" != os {
+	if os != "linux" {
 		log.Fatal("only support linux!")
 		return
 	}

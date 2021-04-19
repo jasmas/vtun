@@ -33,6 +33,7 @@ func Start(config config.Config) {
 		log.Fatalln("failed to listen on UDP socket:", err)
 	}
 	defer conn.Close()
+	log.Printf("vtun server started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
 	forwarder := &Forwarder{localConn: conn}
 	go forwarder.forward(iface, conn)
 	buf := make([]byte, 1500)

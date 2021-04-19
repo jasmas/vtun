@@ -25,6 +25,7 @@ func Start(config config.Config) {
 		log.Fatalln("failed to listen on UDP socket:", err)
 	}
 	defer conn.Close()
+	log.Printf("vtun client started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
 	// read data from remote and write data to tun
 	go func() {
 		buf := make([]byte, 1500)
