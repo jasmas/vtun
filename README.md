@@ -21,3 +21,16 @@ Usage of ./vtun:
   -s string
         server address (default "0.0.0.0:3001")
 ```  
+
+## client
+
+```
+./vtun -l=:3000 -s=server-addr:3001 -c=172.16.0.10/24 -k=123456
+
+```
+## server
+
+```
+./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
+
+```
