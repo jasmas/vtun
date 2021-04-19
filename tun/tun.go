@@ -13,7 +13,6 @@ func CreateTun(cidr string) (iface *water.Interface) {
 	os := runtime.GOOS
 	if os == "darwin" {
 		c.DeviceType = water.TUN
-		c.Name = "utun100"
 	} else {
 		c.DeviceType = water.TAP
 		c.Name = "vtun"
