@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
-	"runtime"
 
 	"github.com/net-byte/vtun/client"
 	"github.com/net-byte/vtun/common/config"
@@ -18,12 +16,6 @@ func main() {
 	flag.StringVar(&config.Key, "k", "6w9z$C&F)J@NcRfWjXn3r4u7x!A%D*G-", "encryption key")
 	flag.BoolVar(&config.ServerMode, "S", false, "server mode")
 	flag.Parse()
-
-	os := runtime.GOOS
-	if os != "linux" {
-		log.Fatal("only support linux!")
-		return
-	}
 
 	if config.ServerMode {
 		server.Start(config)
