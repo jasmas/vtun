@@ -36,7 +36,7 @@ func execCmd(c string, args ...string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	err := cmd.Run()
-	if nil != err {
+	if err != nil {
 		log.Fatalln("failed to exec /sbin/ip error:", err)
 	}
 }
