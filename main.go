@@ -3,26 +3,32 @@ package main
 import (
 	"flag"
 	"log"
+	"runtime"
 
-	vtun "github.com/net-byte/vtun/cmd"
-)
-
-var (
-	local  = flag.String("l", "172.16.0.1/24", "Local tun interface IP/MASK like 172.16.0.1/24")
-	remote = flag.String("r", "172.16.0.2", "Remote server external IP like 172.16.0.2")
-	port   = flag.Int("p", 2001, "UDP port")
-	key    = flag.String("k", "6da62287-979a-4eb4-a5ab-8b3d89da134b", "Encrypt key")
+	"github.com/net-byte/vtun/client"
+	"github.com/net-byte/vtun/common/config"
+	"github.com/net-byte/vtun/server"
 )
 
 func main() {
+	config := config.Config{}
+	flag.StringVar(&config.CIDR, "c", "172.16.0.1/24", "tun interface CIDR")
+	flag.StringVar(&config.LocalAddr, "l", "0.0.0.0:3000", "local address")
+	flag.StringVar(&config.ServerAddr, "s", "0.0.0.0:3001", "server address")
+	flag.StringVar(&config.Key, "k", "6w9z$C&F)J@NcRfWjXn3r4u7x!A%D*G-", "encryption key")
+	flag.BoolVar(&config.ServerMode, "S", false, "server mode")
 	flag.Parse()
-	if "" == *local {
-		flag.Usage()
-		log.Fatalln("local ip is not specified")
+
+	os := runtime.GOOS
+	if "linux" != os {
+		log.Fatal("only support linux!")
+		return
 	}
-	if "" == *remote {
-		flag.Usage()
-		log.Fatalln("remote ip is not specified")
+
+	if config.ServerMode {
+		server.Start(config)
+	} else {
+		client.Start(config)
 	}
-	vtun.New(local, remote, port, key)
+
 }
