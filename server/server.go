@@ -23,6 +23,7 @@ type ForwardData struct {
 
 // Start server
 func Start(config config.Config) {
+	config.Init()
 	iface := tun.CreateTun(config.CIDR)
 	localAddr, err := net.ResolveUDPAddr("udp", config.LocalAddr)
 	if err != nil {
@@ -34,8 +35,10 @@ func Start(config config.Config) {
 	}
 	defer conn.Close()
 	log.Printf("vtun server started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
+	// forward data to client
 	forwarder := &Forwarder{localConn: conn}
 	go forwarder.forward(iface, conn)
+	// read data from client
 	buf := make([]byte, 1500)
 	for {
 		n, cliAddr, err := conn.ReadFromUDP(buf)

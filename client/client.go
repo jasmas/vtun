@@ -11,10 +11,11 @@ import (
 
 // Start client
 func Start(config config.Config) {
+	config.Init()
 	iface := tun.CreateTun(config.CIDR)
-	remoteAddr, err := net.ResolveUDPAddr("udp", config.ServerAddr)
+	serverAddr, err := net.ResolveUDPAddr("udp", config.ServerAddr)
 	if err != nil {
-		log.Fatalln("failed to resolve remote addr:", err)
+		log.Fatalln("failed to resolve server addr:", err)
 	}
 	localAddr, err := net.ResolveUDPAddr("udp", config.LocalAddr)
 	if err != nil {
@@ -26,7 +27,7 @@ func Start(config config.Config) {
 	}
 	defer conn.Close()
 	log.Printf("vtun client started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
-	// read data from remote and write data to tun
+	// read data from server
 	go func() {
 		buf := make([]byte, 1500)
 		for {
@@ -40,7 +41,7 @@ func Start(config config.Config) {
 			iface.Write(b)
 		}
 	}()
-	// read data from tun and write to remote
+	// read data from tun
 	packet := make([]byte, 1500)
 	for {
 		n, err := iface.Read(packet)
@@ -50,6 +51,6 @@ func Start(config config.Config) {
 		b := packet[:n]
 		// encrypt data
 		cipher.Encrypt(&b)
-		conn.WriteToUDP(b, remoteAddr)
+		conn.WriteToUDP(b, serverAddr)
 	}
 }
