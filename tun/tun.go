@@ -9,12 +9,9 @@ import (
 )
 
 func CreateTun(cidr string) (iface *water.Interface) {
-	c := water.Config{}
+	c := water.Config{DeviceType: water.TUN}
 	os := runtime.GOOS
-	if os == "darwin" {
-		c.DeviceType = water.TUN
-	} else {
-		c.DeviceType = water.TAP
+	if os != "darwin" {
 		c.Name = "vtun"
 	}
 	iface, err := water.New(c)
