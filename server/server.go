@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"sync"
@@ -9,17 +10,8 @@ import (
 	"github.com/net-byte/vtun/common/config"
 	"github.com/net-byte/vtun/tun"
 	"github.com/songgao/water"
+	"github.com/songgao/water/waterutil"
 )
-
-type Forwarder struct {
-	localConn  *net.UDPConn
-	cliConnMap sync.Map
-}
-
-type ForwardData struct {
-	localConn *net.UDPConn
-	data      []byte
-}
 
 // Start server
 func Start(config config.Config) {
@@ -54,6 +46,11 @@ func Start(config config.Config) {
 	}
 }
 
+type Forwarder struct {
+	localConn  *net.UDPConn
+	cliConnMap sync.Map
+}
+
 func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 	packet := make([]byte, 1500)
 	for {
@@ -61,15 +58,32 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 		if err != nil || n == 0 {
 			continue
 		}
-		b := packet[:n]
-		// encrypt data
-		cipher.Encrypt(&b)
-		fd := ForwardData{localConn: conn, data: b}
+		fd := ForwardData{localConn: conn, data: packet[:n]}
 		f.cliConnMap.Range(fd.walk)
 	}
 }
 
+type ForwardData struct {
+	localConn *net.UDPConn
+	data      []byte
+}
+
 func (f *ForwardData) walk(key, value interface{}) bool {
-	f.localConn.WriteToUDP(f.data, value.(*net.UDPAddr))
+	if waterutil.IsIPv4(f.data) {
+		ip := waterutil.IPv4Destination(f.data)
+		port := waterutil.IPv4DestinationPort(f.data)
+		cliAddr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
+		log.Printf("to client:%v", cliAddr)
+		if cliAddr == key.(string) {
+			// encrypt data
+			cipher.Encrypt(&f.data)
+			f.localConn.WriteToUDP(f.data, value.(*net.UDPAddr))
+			return false
+		}
+	} else {
+		// encrypt data
+		cipher.Encrypt(&f.data)
+		f.localConn.WriteToUDP(f.data, value.(*net.UDPAddr))
+	}
 	return true
 }
