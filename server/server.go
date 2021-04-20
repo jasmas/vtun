@@ -45,7 +45,12 @@ func Start(config config.Config) {
 			continue
 		}
 		iface.Write(b)
-		key := srcAddr(b) + "-" + dstAddr(b)
+		srcAddr := srcAddr(b)
+		dstAddr := dstAddr(b)
+		if srcAddr == "" || dstAddr == "" {
+			continue
+		}
+		key := srcAddr + "-" + dstAddr
 		forwarder.connCache.Set(key, cliAddr, cache.DefaultExpiration)
 	}
 }
@@ -66,7 +71,12 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		key := dstAddr(b) + "-" + srcAddr(b)
+		dstAddr := dstAddr(b)
+		srcAddr := srcAddr(b)
+		if dstAddr == "" || srcAddr == "" {
+			continue
+		}
+		key := dstAddr + "-" + srcAddr
 		v, ok := f.connCache.Get(key)
 		if ok {
 			// encrypt data
@@ -77,15 +87,27 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 }
 
 func srcAddr(b []byte) string {
-	ip := waterutil.IPv4Source(b)
-	port := waterutil.IPv4SourcePort(b)
-	addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
-	return addr
+	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
+		ip := waterutil.IPv4Source(b)
+		port := waterutil.IPv4SourcePort(b)
+		addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
+		return addr
+	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
+		ip := waterutil.IPv4Source(b)
+		return ip.To4().String()
+	}
+	return ""
 }
 
 func dstAddr(b []byte) string {
-	ip := waterutil.IPv4Destination(b)
-	port := waterutil.IPv4DestinationPort(b)
-	addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
-	return addr
+	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
+		ip := waterutil.IPv4Destination(b)
+		port := waterutil.IPv4DestinationPort(b)
+		addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
+		return addr
+	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
+		ip := waterutil.IPv4Destination(b)
+		return ip.To4().String()
+	}
+	return ""
 }
