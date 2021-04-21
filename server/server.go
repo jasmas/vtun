@@ -50,7 +50,7 @@ func Start(config config.Config) {
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
-		key := srcAddr + "-" + dstAddr
+		key := fmt.Sprintf("%v->%v", srcAddr, dstAddr)
 		forwarder.connCache.Set(key, cliAddr, cache.DefaultExpiration)
 	}
 }
@@ -76,7 +76,7 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 		if dstAddr == "" || srcAddr == "" {
 			continue
 		}
-		key := dstAddr + "-" + srcAddr
+		key := fmt.Sprintf("%v->%v", dstAddr, srcAddr)
 		v, ok := f.connCache.Get(key)
 		if ok {
 			// encrypt data
