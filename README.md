@@ -25,12 +25,12 @@ Usage of ./vtun:
 ## client
 
 ```
-./vtun -l=:3000 -s=server-addr:3001 -c=172.16.0.10/24 -k=123456
+sudo ./vtun -l=:3000 -s=server-addr:3001 -c=172.16.0.10/24 -k=123456
 
 ```
 ## server
 
 ```
-./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
+sudo ./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
 
 ```
