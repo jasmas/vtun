@@ -22,15 +22,25 @@ Usage of ./vtun:
         server address (default "0.0.0.0:3001")
 ```  
 
-## client
+## Client
 
 ```
 sudo ./vtun -l=:3000 -s=server-addr:3001 -c=172.16.0.10/24 -k=123456
 
 ```
-## server
+## Server
 
 ```
 sudo ./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
 
+```
+
+## Enable IP forwarding on server
+
+```
+sudo sysctl -w net.ipv4.conf.vtun.route_localnet=1
+sudo sysctl -w net.ipv4.conf.vtun.rp_filter=0
+sudo sysctl -w net.ipv4.conf.all.rp_filter=0
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -p
 ```
