@@ -1,30 +1,32 @@
 package cipher
 
 import (
-	"crypto/sha256"
-
-	"golang.org/x/crypto/chacha20poly1305"
+	"crypto/rc4"
+	"log"
 )
 
-var nonce = make([]byte, chacha20poly1305.NonceSizeX)
-
-var hashKey = []byte("8pUsXuZw4z6B9EhGdKgNjQnjmVsYv2x5")
+var theKey = []byte("8pUsXuZw4z6B9EhGdKgNjQnjmVsYv2x5")
 
 func GenerateKey(key string) {
-	sha := sha256.Sum256([]byte(key))
-	buff := make([]byte, 32)
-	copy(sha[:32], buff[:32])
-	hashKey = buff
+	theKey = []byte(key)
 }
 
-func Encrypt(data *[]byte) {
-	aead, _ := chacha20poly1305.NewX(hashKey)
-	ciphertext := aead.Seal(nil, nonce, *data, nil)
-	data = &ciphertext
+func Encrypt(data []byte) []byte {
+	c, err := rc4.NewCipher(theKey)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	dst := make([]byte, len(data))
+	c.XORKeyStream(dst, data)
+	return dst
 }
 
-func Decrypt(data *[]byte) {
-	aead, _ := chacha20poly1305.NewX(hashKey)
-	plaintext, _ := aead.Open(nil, nonce, *data, nil)
-	data = &plaintext
+func Decrypt(data []byte) []byte {
+	c, err := rc4.NewCipher(theKey)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	dst := make([]byte, len(data))
+	c.XORKeyStream(dst, data)
+	return dst
 }

@@ -38,9 +38,8 @@ func Start(config config.Config) {
 		if err != nil || n == 0 {
 			continue
 		}
-		b := buf[:n]
 		// decrypt data
-		cipher.Decrypt(&b)
+		b := cipher.Decrypt(buf[:n])
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
@@ -80,7 +79,7 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 		v, ok := f.connCache.Get(key)
 		if ok {
 			// encrypt data
-			cipher.Encrypt(&b)
+			b = cipher.Encrypt(b)
 			f.localConn.WriteToUDP(b, v.(*net.UDPAddr))
 		}
 	}

@@ -35,9 +35,8 @@ func Start(config config.Config) {
 			if err != nil || n == 0 {
 				continue
 			}
-			b := buf[:n]
 			// decrypt data
-			cipher.Decrypt(&b)
+			b := cipher.Decrypt(buf[:n])
 			iface.Write(b)
 		}
 	}()
@@ -48,9 +47,8 @@ func Start(config config.Config) {
 		if err != nil || n == 0 {
 			continue
 		}
-		b := packet[:n]
 		// encrypt data
-		cipher.Encrypt(&b)
+		b := cipher.Encrypt(packet[:n])
 		conn.WriteToUDP(b, serverAddr)
 	}
 }
