@@ -7,10 +7,11 @@ import (
 	"github.com/net-byte/vtun/common/cipher"
 	"github.com/net-byte/vtun/common/config"
 	"github.com/net-byte/vtun/tun"
+	"github.com/songgao/water/waterutil"
 )
 
-// Start client
-func Start(config config.Config) {
+// StartUDPClient start udp client
+func StartUDPClient(config config.Config) {
 	config.Init()
 	iface := tun.CreateTun(config.CIDR)
 	serverAddr, err := net.ResolveUDPAddr("udp", config.ServerAddr)
@@ -26,7 +27,7 @@ func Start(config config.Config) {
 		log.Fatalln("failed to listen on UDP socket:", err)
 	}
 	defer conn.Close()
-	log.Printf("vtun client started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
+	log.Printf("vtun udp client started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
 	// read data from server
 	go func() {
 		buf := make([]byte, 1500)
@@ -37,6 +38,9 @@ func Start(config config.Config) {
 			}
 			// decrypt data
 			b := cipher.Decrypt(buf[:n])
+			if !waterutil.IsIPv4(b) {
+				continue
+			}
 			iface.Write(b)
 		}
 	}()
@@ -45,6 +49,9 @@ func Start(config config.Config) {
 	for {
 		n, err := iface.Read(packet)
 		if err != nil || n == 0 {
+			continue
+		}
+		if !waterutil.IsIPv4(packet) {
 			continue
 		}
 		// encrypt data

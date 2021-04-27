@@ -18,16 +18,19 @@ func main() {
 	flag.BoolVar(&config.ServerMode, "S", false, "server mode")
 	flag.Parse()
 
-	if config.ServerMode {
-		switch config.Protocol {
-		case "udp":
+	switch config.Protocol {
+	case "udp":
+		if config.ServerMode {
 			server.StartUDPServer(config)
-		case "ws":
-			server.StartWSServer(config)
-		default:
+		} else {
+			client.StartUDPClient(config)
 		}
-	} else {
-		client.Start(config)
+	case "ws":
+		if config.ServerMode {
+			server.StartWSServer(config)
+		} else {
+			client.StartWSClient(config)
+		}
+	default:
 	}
-
 }

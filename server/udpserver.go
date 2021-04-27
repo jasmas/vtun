@@ -8,6 +8,7 @@ import (
 
 	"github.com/net-byte/vtun/common/cipher"
 	"github.com/net-byte/vtun/common/config"
+	"github.com/net-byte/vtun/common/netutil"
 	"github.com/net-byte/vtun/tun"
 	"github.com/patrickmn/go-cache"
 	"github.com/songgao/water"
@@ -44,8 +45,8 @@ func StartUDPServer(config config.Config) {
 			continue
 		}
 		iface.Write(b)
-		srcAddr := srcAddr(b)
-		dstAddr := dstAddr(b)
+		srcAddr := netutil.SrcAddr(b)
+		dstAddr := netutil.DstAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
@@ -70,9 +71,9 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		dstAddr := dstAddr(b)
-		srcAddr := srcAddr(b)
-		if dstAddr == "" || srcAddr == "" {
+		srcAddr := netutil.SrcAddr(b)
+		dstAddr := netutil.DstAddr(b)
+		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
 		key := fmt.Sprintf("%v->%v", dstAddr, srcAddr)
@@ -83,30 +84,4 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 			f.localConn.WriteToUDP(b, v.(*net.UDPAddr))
 		}
 	}
-}
-
-func srcAddr(b []byte) string {
-	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
-		ip := waterutil.IPv4Source(b)
-		port := waterutil.IPv4SourcePort(b)
-		addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
-		return addr
-	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
-		ip := waterutil.IPv4Source(b)
-		return ip.To4().String()
-	}
-	return ""
-}
-
-func dstAddr(b []byte) string {
-	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
-		ip := waterutil.IPv4Destination(b)
-		port := waterutil.IPv4DestinationPort(b)
-		addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
-		return addr
-	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
-		ip := waterutil.IPv4Destination(b)
-		return ip.To4().String()
-	}
-	return ""
 }

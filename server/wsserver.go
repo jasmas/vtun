@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/net-byte/vtun/common/cipher"
 	"github.com/net-byte/vtun/common/config"
+	"github.com/net-byte/vtun/common/netutil"
 	"github.com/net-byte/vtun/tun"
 	"github.com/patrickmn/go-cache"
 	"github.com/songgao/water"
@@ -57,11 +58,6 @@ func StartWSServer(config config.Config) {
 	http.ListenAndServe(config.ServerAddr, nil)
 }
 
-func closeWS(wsConn *websocket.Conn) {
-	wsConn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(time.Second*5))
-	wsConn.Close()
-}
-
 func tunToWs(iface *water.Interface, c *cache.Cache) {
 	buffer := make([]byte, 1500)
 	for {
@@ -73,8 +69,8 @@ func tunToWs(iface *water.Interface, c *cache.Cache) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		srcAddr := srcAddr(b)
-		dstAddr := dstAddr(b)
+		srcAddr := netutil.SrcAddr(b)
+		dstAddr := netutil.DstAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
@@ -88,7 +84,7 @@ func tunToWs(iface *water.Interface, c *cache.Cache) {
 }
 
 func wsToTun(wsConn *websocket.Conn, iface *water.Interface, c *cache.Cache) {
-	defer closeWS(wsConn)
+	defer netutil.CloseWS(wsConn)
 	for {
 		wsConn.SetReadDeadline(time.Now().Add(time.Duration(30) * time.Second))
 		_, b, err := wsConn.ReadMessage()
@@ -99,8 +95,8 @@ func wsToTun(wsConn *websocket.Conn, iface *water.Interface, c *cache.Cache) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		srcAddr := srcAddr(b)
-		dstAddr := dstAddr(b)
+		srcAddr := netutil.SrcAddr(b)
+		dstAddr := netutil.DstAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
