@@ -14,8 +14,8 @@ import (
 	"github.com/songgao/water/waterutil"
 )
 
-// Start server
-func Start(config config.Config) {
+// StartUDPServer start udp server
+func StartUDPServer(config config.Config) {
 	config.Init()
 	iface := tun.CreateTun(config.CIDR)
 	localAddr, err := net.ResolveUDPAddr("udp", config.LocalAddr)
@@ -27,7 +27,7 @@ func Start(config config.Config) {
 		log.Fatalln("failed to listen on UDP socket:", err)
 	}
 	defer conn.Close()
-	log.Printf("vtun server started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
+	log.Printf("vtun udp server started on %v,CIDR is %v", config.LocalAddr, config.CIDR)
 	// forward data to client
 	forwarder := &Forwarder{localConn: conn, connCache: cache.New(30*time.Minute, 10*time.Minute)}
 	go forwarder.forward(iface, conn)

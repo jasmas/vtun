@@ -7,6 +7,7 @@ type Config struct {
 	ServerAddr string
 	CIDR       string
 	Key        string
+	Protocol   string
 	ServerMode bool
 }
 
