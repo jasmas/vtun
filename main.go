@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 
 	"github.com/net-byte/vtun/client"
 	"github.com/net-byte/vtun/common/config"
@@ -9,6 +10,9 @@ import (
 )
 
 func main() {
+	if a := recover(); a != nil {
+		log.Println("recover", a)
+	}
 	config := config.Config{}
 	flag.StringVar(&config.CIDR, "c", "172.16.0.1/24", "tun interface CIDR")
 	flag.StringVar(&config.LocalAddr, "l", "0.0.0.0:3000", "local address")
