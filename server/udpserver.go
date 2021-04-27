@@ -17,6 +17,9 @@ import (
 
 // StartUDPServer start udp server
 func StartUDPServer(config config.Config) {
+	if r := recover(); r != nil {
+		log.Println("recover", r)
+	}
 	config.Init()
 	iface := tun.CreateTun(config.CIDR)
 	localAddr, err := net.ResolveUDPAddr("udp", config.LocalAddr)
