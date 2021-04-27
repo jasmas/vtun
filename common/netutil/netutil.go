@@ -12,30 +12,42 @@ import (
 	"github.com/songgao/water/waterutil"
 )
 
-func SrcAddr(b []byte) string {
+func SrcAddr(b []byte) (addr string) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+			addr = ""
+		}
+	}()
 	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
 		ip := waterutil.IPv4Source(b)
 		port := waterutil.IPv4SourcePort(b)
-		addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
+		addr = fmt.Sprintf("%s:%d", ip.To4().String(), port)
 		return addr
 	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
 		ip := waterutil.IPv4Source(b)
 		return ip.To4().String()
 	}
-	return ""
+	return addr
 }
 
-func DstAddr(b []byte) string {
+func DstAddr(b []byte) (addr string) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+			addr = ""
+		}
+	}()
 	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
 		ip := waterutil.IPv4Destination(b)
 		port := waterutil.IPv4DestinationPort(b)
-		addr := fmt.Sprintf("%s:%d", ip.To4().String(), port)
+		addr = fmt.Sprintf("%s:%d", ip.To4().String(), port)
 		return addr
 	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
 		ip := waterutil.IPv4Destination(b)
 		return ip.To4().String()
 	}
-	return ""
+	return addr
 }
 
 func ConnectWS(config config.Config) *websocket.Conn {
