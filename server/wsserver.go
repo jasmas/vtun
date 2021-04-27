@@ -29,9 +29,11 @@ var upgrader = websocket.Upgrader{
 
 // StartWSServer start ws server
 func StartWSServer(config config.Config) {
-	if r := recover(); r != nil {
-		log.Println("recover", r)
-	}
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovering from panic in error: %v \n", r)
+		}
+	}()
 	config.Init()
 	iface := tun.CreateTun(config.CIDR)
 	c := cache.New(30*time.Minute, 10*time.Minute)
