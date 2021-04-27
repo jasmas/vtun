@@ -16,6 +16,8 @@ Usage of ./vtun:
         tun interface CIDR (default "172.16.0.1/24")
   -k string
         encryption key (default "6w9z$C&F)J@NcRfWjXn3r4u7x!A%D*G-")
+  -p string
+        protocol udp/ws (default "udp")
   -l string
         local address (default "0.0.0.0:3000")
   -s string
