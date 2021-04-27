@@ -55,7 +55,7 @@ func StartWSServer(config config.Config) {
 		io.WriteString(w, resp)
 	})
 
-	http.ListenAndServe(config.ServerAddr, nil)
+	http.ListenAndServe(config.LocalAddr, nil)
 }
 
 func tunToWs(iface *water.Interface, c *cache.Cache) {
