@@ -1,7 +1,6 @@
 package netutil
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -19,13 +18,7 @@ func SrcAddr(b []byte) (addr string) {
 			addr = ""
 		}
 	}()
-	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
-		ip := waterutil.IPv4Source(b)
-		port := waterutil.IPv4SourcePort(b)
-		addr = fmt.Sprintf("%s:%d", ip.To4().String(), port)
-		log.Printf("SrcAddr %v", addr)
-		return addr
-	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
+	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP || waterutil.IPv4Protocol(b) == waterutil.ICMP {
 		ip := waterutil.IPv4Source(b)
 		return ip.To4().String()
 	}
@@ -39,13 +32,7 @@ func DstAddr(b []byte) (addr string) {
 			addr = ""
 		}
 	}()
-	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP {
-		ip := waterutil.IPv4Destination(b)
-		port := waterutil.IPv4DestinationPort(b)
-		addr = fmt.Sprintf("%s:%d", ip.To4().String(), port)
-		log.Printf("DstAddr %v", addr)
-		return addr
-	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
+	if waterutil.IPv4Protocol(b) == waterutil.UDP || waterutil.IPv4Protocol(b) == waterutil.TCP || waterutil.IPv4Protocol(b) == waterutil.ICMP {
 		ip := waterutil.IPv4Destination(b)
 		return ip.To4().String()
 	}
