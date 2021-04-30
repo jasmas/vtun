@@ -40,9 +40,7 @@ sudo ./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
 ## Enable IP forwarding on server
 
 ```
-sudo sysctl -w net.ipv4.conf.vtun.route_localnet=1
-sudo sysctl -w net.ipv4.conf.vtun.rp_filter=0
-sudo sysctl -w net.ipv4.conf.all.rp_filter=0
-sudo sysctl -w net.ipv4.ip_forward=1
+sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+sudo iptables -t nat -A POSTROUTING -s 172.16.0.0/24 -o ens3 -j MASQUERADE
 sudo sysctl -p
 ```
