@@ -41,8 +41,8 @@ sudo ./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
 
 ```
 sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+sudo sysctl -p
 sudo iptables -t nat -A POSTROUTING -s 172.16.0.0/24 -o ens3 -j MASQUERADE
 sudo apt-get install iptables-persistent
 sudo iptables-save > /etc/iptables/rules.v4
-sudo sysctl -p
 ```

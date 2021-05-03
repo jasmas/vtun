@@ -17,7 +17,7 @@ func ConfigTun(cidr string, iface *water.Interface) {
 		log.Panicf("error cidr %v", cidr)
 	}
 	if os == "linux" {
-		execCmd("/sbin/ip", "link", "set", "dev", iface.Name(), "mtu", "1300")
+		execCmd("/sbin/ip", "link", "set", "dev", iface.Name(), "mtu", "1500")
 		execCmd("/sbin/ip", "addr", "add", cidr, "dev", iface.Name())
 		execCmd("/sbin/ip", "link", "set", "dev", iface.Name(), "up")
 	} else if os == "darwin" {
