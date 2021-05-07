@@ -16,6 +16,7 @@ func main() {
 	flag.StringVar(&config.Key, "k", "6w9z$C&F)J@NcRfWjXn3r4u7x!A%D*G-", "encryption key")
 	flag.StringVar(&config.Protocol, "p", "udp", "protocol udp/ws")
 	flag.BoolVar(&config.ServerMode, "S", false, "server mode")
+	flag.BoolVar(&config.TLS, "t", false, "enable tls")
 	flag.Parse()
 
 	switch config.Protocol {

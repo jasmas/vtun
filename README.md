@@ -12,6 +12,7 @@ A simple vpn.
 ```
 Usage of ./vtun:
   -S    server mode
+  -t    enable tls
   -c string
         tun interface CIDR (default "172.16.0.1/24")
   -k string

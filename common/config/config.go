@@ -9,6 +9,7 @@ type Config struct {
 	Key        string
 	Protocol   string
 	ServerMode bool
+	TLS        bool
 }
 
 func (config *Config) Init() {
