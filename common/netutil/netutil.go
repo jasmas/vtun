@@ -28,7 +28,7 @@ func GetAddr(b []byte) (srcAddr string, dstAddr string) {
 		srcPort, dstPort := GetPort(b)
 		src := fmt.Sprintf("%s:%s", srcIp.To4().String(), srcPort)
 		dst := fmt.Sprintf("%s:%s", dstIp.To4().String(), dstPort)
-		log.Printf("%s->%s", src, dst)
+		//log.Printf("%s->%s", src, dst)
 		return src, dst
 	} else if waterutil.IPv4Protocol(b) == waterutil.UDP {
 		srcIp := waterutil.IPv4Source(b)
@@ -36,7 +36,7 @@ func GetAddr(b []byte) (srcAddr string, dstAddr string) {
 		srcPort, dstPort := GetPort(b)
 		src := fmt.Sprintf("%s:%s", srcIp.To4().String(), srcPort)
 		dst := fmt.Sprintf("%s:%s", dstIp.To4().String(), dstPort)
-		log.Printf("%s->%s", src, dst)
+		//log.Printf("%s->%s", src, dst)
 		return src, dst
 	} else if waterutil.IPv4Protocol(b) == waterutil.ICMP {
 		srcIp := waterutil.IPv4Source(b)
