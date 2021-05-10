@@ -45,8 +45,7 @@ func StartUDPServer(config config.Config) {
 			continue
 		}
 		iface.Write(b)
-		srcAddr := netutil.SrcAddr(b)
-		dstAddr := netutil.DstAddr(b)
+		srcAddr, dstAddr := netutil.GetAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
@@ -71,8 +70,7 @@ func (f *Forwarder) forward(iface *water.Interface, conn *net.UDPConn) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		srcAddr := netutil.SrcAddr(b)
-		dstAddr := netutil.DstAddr(b)
+		srcAddr, dstAddr := netutil.GetAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}

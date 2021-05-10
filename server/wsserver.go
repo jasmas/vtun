@@ -69,8 +69,7 @@ func tunToWs(iface *water.Interface, c *cache.Cache) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		srcAddr := netutil.SrcAddr(b)
-		dstAddr := netutil.DstAddr(b)
+		srcAddr, dstAddr := netutil.GetAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
@@ -95,8 +94,7 @@ func wsToTun(wsConn *websocket.Conn, iface *water.Interface, c *cache.Cache) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		srcAddr := netutil.SrcAddr(b)
-		dstAddr := netutil.DstAddr(b)
+		srcAddr, dstAddr := netutil.GetAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}

@@ -33,8 +33,7 @@ func StartWSClient(config config.Config) {
 		if !waterutil.IsIPv4(b) {
 			continue
 		}
-		srcAddr := netutil.SrcAddr(b)
-		dstAddr := netutil.DstAddr(b)
+		srcAddr, dstAddr := netutil.GetAddr(b)
 		if srcAddr == "" || dstAddr == "" {
 			continue
 		}
