@@ -47,7 +47,7 @@ func GetAddr(b []byte) (srcAddr string, dstAddr string) {
 }
 
 func GetPort(b []byte) (srcPort string, dstPort string) {
-	packet := gopacket.NewPacket(b, layers.LayerTypeEthernet, gopacket.Default)
+	packet := gopacket.NewPacket(b, layers.LayerTypeIPv4, gopacket.Default)
 	if tcpLayer := packet.Layer(layers.LayerTypeTCP); tcpLayer != nil {
 		tcp, _ := tcpLayer.(*layers.TCP)
 		return tcp.SrcPort.String(), tcp.DstPort.String()
