@@ -33,25 +33,29 @@ Usage of ./vtun:
 ## Client
 
 ```
-sudo ./vtun -l=:3000 -s=server-addr:3001 -c=172.16.0.10/24 -k=123456
+sudo ./vtun -l=:3000 -s=server-addr:3001 -c=172.16.0.10/24 -k=123456 -p=ws
 
 ```
 
 ## Server
 
 ```
-sudo ./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456
+sudo ./vtun -S -l=:3001 -c=172.16.0.1/24 -k=123456 -p=ws
 
 ```
 
-## Enable IP forwarding on server
+## Server setup
+
+1. Add TLS for websocket,reverse proxy server(3001) via nginx/caddy(443)
+
+2. Enable IP forwarding on server
 
 ```
-sudo echo 1 > /proc/sys/net/ipv4/ip_forward
-sudo sysctl -p
-sudo iptables -t nat -A POSTROUTING -s 172.16.0.0/24 -o ens3 -j MASQUERADE
-sudo apt-get install iptables-persistent
-sudo iptables-save > /etc/iptables/rules.v4
+  sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+  sudo sysctl -p
+  sudo iptables -t nat -A POSTROUTING -s 172.16.0.0/24 -o ens3 -j MASQUERADE
+  sudo apt-get install iptables-persistent
+  sudo iptables-save > /etc/iptables/rules.v4
 ```
 
 ## Mobile client
