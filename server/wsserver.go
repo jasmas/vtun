@@ -12,6 +12,7 @@ import (
 	"github.com/net-byte/vtun/common/cipher"
 	"github.com/net-byte/vtun/common/config"
 	"github.com/net-byte/vtun/common/netutil"
+	"github.com/net-byte/vtun/register"
 	"github.com/net-byte/vtun/tun"
 	"github.com/patrickmn/go-cache"
 	"github.com/songgao/water"
@@ -55,7 +56,45 @@ func StartWSServer(config config.Config) {
 		io.WriteString(w, resp)
 	})
 
+	http.HandleFunc("/register/pick/ip", func(w http.ResponseWriter, req *http.Request) {
+		key := req.Header.Get("key")
+		if key != config.Key {
+			error403(w, req)
+			return
+		}
+		ip, pl := register.PickClientIP(config.CIDR)
+		resp := fmt.Sprintf("%v/%v", ip, pl)
+		io.WriteString(w, resp)
+	})
+
+	http.HandleFunc("/register/delete/ip", func(w http.ResponseWriter, req *http.Request) {
+		key := req.Header.Get("key")
+		if key != config.Key {
+			error403(w, req)
+			return
+		}
+		ip := req.URL.Query().Get("ip")
+		if ip != "" {
+			register.DeleteClientIP(ip)
+		}
+		io.WriteString(w, "OK")
+	})
+
+	http.HandleFunc("/register/list/ip", func(w http.ResponseWriter, req *http.Request) {
+		key := req.Header.Get("key")
+		if key != config.Key {
+			error403(w, req)
+			return
+		}
+		io.WriteString(w, strings.Join(register.ListClientIP(), "\r\n"))
+	})
+
 	http.ListenAndServe(config.LocalAddr, nil)
+}
+
+func error403(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusForbidden)
+	w.Write([]byte("403 HTTP status code returned!"))
 }
 
 func tunToWs(iface *water.Interface, c *cache.Cache) {

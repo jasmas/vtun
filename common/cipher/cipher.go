@@ -5,14 +5,14 @@ import (
 	"log"
 )
 
-var theKey = []byte("8pUsXuZw4z6B9EhGdKgNjQnjmVsYv2x5")
+var _key = []byte("8pUsXuZw4z6B9EhGdKgNjQnjmVsYv2x5")
 
 func GenerateKey(key string) {
-	theKey = []byte(key)
+	_key = []byte(key)
 }
 
 func Encrypt(data []byte) []byte {
-	c, err := rc4.NewCipher(theKey)
+	c, err := rc4.NewCipher(_key)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -22,7 +22,7 @@ func Encrypt(data []byte) []byte {
 }
 
 func Decrypt(data []byte) []byte {
-	c, err := rc4.NewCipher(theKey)
+	c, err := rc4.NewCipher(_key)
 	if err != nil {
 		log.Fatalln(err)
 	}
