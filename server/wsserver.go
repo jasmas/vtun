@@ -94,7 +94,7 @@ func StartWSServer(config config.Config) {
 
 func error403(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusForbidden)
-	w.Write([]byte("403 HTTP status code returned!"))
+	w.Write([]byte("403 No Permission"))
 }
 
 func tunToWs(iface *water.Interface, c *cache.Cache) {
