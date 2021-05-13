@@ -37,12 +37,12 @@ func PickClientIP(cidr string) (clientIP string, prefixLength string) {
 	pickIP := ipNet.IP.To4()
 	for {
 		pickIP[3]++
+		if pickIP[3] >= 255 {
+			break
+		}
 		if !ExistClientIP(pickIP.String()) {
 			AddClientIP(pickIP.String())
 			return pickIP.String(), strings.Split(cidr, "/")[1]
-		}
-		if pickIP[3] >= 255 {
-			break
 		}
 	}
 	return "", ""
