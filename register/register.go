@@ -42,8 +42,8 @@ func PickClientIP(cidr string) (clientIP string, prefixLength string) {
 		log.Panicf("error cidr %v", cidr)
 	}
 	pickIP := ipNet.IP.To4()
+	pickIP[3] = 1
 	for {
-		pickIP[3] = 1
 		pickIP[3]++
 		if pickIP[3] >= 255 {
 			break
