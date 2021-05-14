@@ -37,13 +37,13 @@ func KeepAliveClientIP(ip string) {
 }
 
 func PickClientIP(cidr string) (clientIP string, prefixLength string) {
-	ip, ipNet, err := net.ParseCIDR(cidr)
+	_, ipNet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		log.Panicf("error cidr %v", cidr)
 	}
-	AddClientIP(ip.To4().String())
 	pickIP := ipNet.IP.To4()
 	for {
+		pickIP[3] = 1
 		pickIP[3]++
 		if pickIP[3] >= 255 {
 			break
