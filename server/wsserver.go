@@ -80,6 +80,19 @@ func StartWSServer(config config.Config) {
 		io.WriteString(w, "OK")
 	})
 
+	http.HandleFunc("/register/keepalive/ip", func(w http.ResponseWriter, req *http.Request) {
+		key := req.Header.Get("key")
+		if key != config.Key {
+			error403(w, req)
+			return
+		}
+		ip := req.URL.Query().Get("ip")
+		if ip != "" {
+			register.KeepAliveClientIP(ip)
+		}
+		io.WriteString(w, "OK")
+	})
+
 	http.HandleFunc("/register/list/ip", func(w http.ResponseWriter, req *http.Request) {
 		key := req.Header.Get("key")
 		if key != config.Key {

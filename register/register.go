@@ -12,11 +12,11 @@ import (
 var _register *cache.Cache
 
 func init() {
-	_register = cache.New(24*time.Hour, 1*time.Hour)
+	_register = cache.New(30*time.Minute, 3*time.Minute)
 }
 
 func AddClientIP(ip string) {
-	_register.Add(ip, 1, cache.DefaultExpiration)
+	_register.Add(ip, 0, cache.DefaultExpiration)
 }
 
 func DeleteClientIP(ip string) {
@@ -26,6 +26,14 @@ func DeleteClientIP(ip string) {
 func ExistClientIP(ip string) bool {
 	_, ok := _register.Get(ip)
 	return ok
+}
+
+func KeepAliveClientIP(ip string) {
+	if ExistClientIP(ip) {
+		_register.Increment(ip, 1)
+	} else {
+		AddClientIP(ip)
+	}
 }
 
 func PickClientIP(cidr string) (clientIP string, prefixLength string) {
