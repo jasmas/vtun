@@ -23,7 +23,7 @@ Usage of ./vtun:
   -k string
         encryption key (default "6w9z$C&F)J@NcRfWjXn3r4u7x!A%D*G-")
   -p string
-        protocol udp/ws (default "udp")
+        protocol ws/udp (default "ws")
   -l string
         local address (default "0.0.0.0:3000")
   -s string
