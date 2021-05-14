@@ -37,20 +37,23 @@ func KeepAliveClientIP(ip string) {
 }
 
 func PickClientIP(cidr string) (clientIP string, prefixLength string) {
-	_, ipNet, err := net.ParseCIDR(cidr)
+	ip, ipNet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		log.Panicf("error cidr %v", cidr)
 	}
-	pickIP := ipNet.IP.To4()
-	pickIP[3] = 1
+	total := addressCount(ipNet) - 3
+	index := uint64(0)
+	//skip first ip
+	ip = incr(ipNet.IP.To4())
 	for {
-		pickIP[3]++
-		if pickIP[3] >= 255 {
+		ip = incr(ip)
+		index++
+		if index >= total {
 			break
 		}
-		if !ExistClientIP(pickIP.String()) {
-			AddClientIP(pickIP.String())
-			return pickIP.String(), strings.Split(cidr, "/")[1]
+		if !ExistClientIP(ip.String()) {
+			AddClientIP(ip.String())
+			return ip.String(), strings.Split(cidr, "/")[1]
 		}
 	}
 	return "", ""
@@ -62,4 +65,29 @@ func ListClientIP() []string {
 		result = append(result, k)
 	}
 	return result
+}
+
+func addressCount(network *net.IPNet) uint64 {
+	prefixLen, bits := network.Mask.Size()
+	return 1 << (uint64(bits) - uint64(prefixLen))
+}
+
+func incr(IP net.IP) net.IP {
+	IP = checkIPv4(IP)
+	incIP := make([]byte, len(IP))
+	copy(incIP, IP)
+	for j := len(incIP) - 1; j >= 0; j-- {
+		incIP[j]++
+		if incIP[j] > 0 {
+			break
+		}
+	}
+	return incIP
+}
+
+func checkIPv4(ip net.IP) net.IP {
+	if v4 := ip.To4(); v4 != nil {
+		return v4
+	}
+	return ip
 }
